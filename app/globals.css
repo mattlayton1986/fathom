@@ -1,49 +1,88 @@
+[data-theme="dark"] {
+  --color-page: #060c14;
+  --color-canvas: #0d1c2e;
+  --color-panel: #152b44;
+  --color-input: #1e3a5c;
+  --color-raised: #274970;
+  --color-border: #1a3350;
+
+  --color-text-primary: #ddeeff;
+  --color-text-secondary: #9dbdd8;
+  --color-text-muted: #6e96b4;
+
+  --color-accent: #00c9a7;
+  --color-accent-hover: #00a88a;
+
+  --badge-string-bg: #003d36;
+  --badge-string-fg: #00e8c6;
+  --badge-number-bg: #3d2600;
+  --badge-number-fg: #ffb340;
+  --badge-boolean-bg: #2a1050;
+  --badge-boolean-fg: #c084fc;
+  --badge-null-bg: #37062a;
+  --badge-null-fg: #ff60cc;
+  --badge-object-bg: #0a2848;
+  --badge-object-fg: #60b0ff;
+  --badge-array-bg: #3d1212;
+  --badge-array-fg: #ff8080;
+}
+
+[data-theme="light"] {
+  --color-page: #ddeaf7;
+  --color-canvas: #e8f2fb;
+  --color-panel: #f2f8fd;
+  --color-input: #ffffff;
+  --color-raised: #f8fcff;
+  --color-border: #b8cfe0;
+
+  --color-text-primary: #0a1828;
+  --color-text-secondary: #1e4262;
+  --color-text-muted: #3d6080;
+
+  --color-accent: #007a64;
+  --color-accent-hover: #005a4a;
+
+  --badge-string-bg: #c0f0e4;
+  --badge-string-fg: #00503d;
+  --badge-number-bg: #fde8c0;
+  --badge-number-fg: #7a3a00;
+  --badge-boolean-bg: #e8d8ff;
+  --badge-boolean-fg: #4a1878;
+  --badge-null-bg: #fce4f4;
+  --badge-null-fg: #700858;
+  --badge-object-bg: #c8dcf8;
+  --badge-object-fg: #0a2860;
+  --badge-array-bg: #fdd0d0;
+  --badge-array-fg: #7a1010;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --font-ui: system-ui, sans-serif;
+
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+
+  --tree-indent: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  padding: 0;
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-base);
   margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }

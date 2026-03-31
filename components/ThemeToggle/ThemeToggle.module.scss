@@ -1,0 +1,30 @@
+.toggle {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--color-input);
+  min-height: 30px;
+}
+
+.option {
+  flex: 1;
+  padding: var(--space-2) var(--space-4);
+  background: none;
+  border: none;
+  border-right: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &:hover,
+  &.active {
+    background: var(--color-raised);
+    color: var(--color-text-primary);
+  }
+}

@@ -1,0 +1,25 @@
+.layout {
+  display: grid;
+  grid-template-columns: 40fr 60fr;
+  height: 100dvh;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+  }
+}
+
+.panel {
+  &-left {
+    background-color: var(--color-panel);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+  }
+
+  &-right {
+    background-color: var(--color-canvas);
+    overflow-y: auto;
+  }
+}
