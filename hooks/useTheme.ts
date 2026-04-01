@@ -5,12 +5,11 @@ import { useState, useEffect } from 'react';
 export type Theme = 'light' | 'dark' | 'system';
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>('dark');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme') as Theme | null;
-    if (saved) setTheme(saved);
-  }, []);
+  const [theme, setTheme] = useState<Theme>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark' || saved === 'system') return saved;
+    return 'system';
+  });
 
   useEffect(() => {
     const apply = (t: Theme) => {
