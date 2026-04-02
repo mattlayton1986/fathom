@@ -18,25 +18,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" className={jetbrainsMono.variable}>
-      <body>
+    <html lang="en" suppressHydrationWarning className={jetbrainsMono.variable}>
+      <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
             (function() {
               try {
                 var theme = localStorage.getItem('theme');
-                if (theme === 'light' || theme === 'dark') {
-                  document.documentElement.setAttribute('data-theme', theme);
-                } else {
-                  var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                var isLight = theme === 'light' ||
+                  (theme !== 'dark' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isLight) {
+                  document.documentElement.setAttribute('data-theme', 'light');
                 }
               } catch(e) {}
             })();
           `
           }}
         />
+      </head>
+      <body>
         {children}
       </body>
     </html>

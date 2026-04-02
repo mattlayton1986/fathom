@@ -6,6 +6,7 @@ export type Theme = 'light' | 'dark' | 'system';
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'system';
     const saved = localStorage.getItem('theme');
     if (saved === 'light' || saved === 'dark' || saved === 'system') return saved;
     return 'system';
@@ -13,13 +14,13 @@ export function useTheme() {
 
   useEffect(() => {
     const apply = (t: Theme) => {
-      if (t === 'system') {
-        // set theme to match system preference
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      const isLight = t === 'light' ||
+        (t === 'system' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+      if (isLight) {
+        document.documentElement.setAttribute('data-theme', 'light');
       } else {
-        // set theme based on dark / light toggle selection
-        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.removeAttribute('data-theme');
       }
     }
 
@@ -30,7 +31,9 @@ export function useTheme() {
     if (theme === 'system') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       const handler = (e: MediaQueryListEvent) =>
-        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        e.matches
+          ? document.documentElement.removeAttribute('data-theme')
+          : document.documentElement.setAttribute('data-theme', 'light');
       mq.addEventListener('change', handler);
 
       // cleanup: remove listener when toggle changes away from 'system'
