@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { type Theme, useTheme } from '@/hooks/useTheme';
 import styles from './ThemeToggle.module.scss';
 
@@ -11,15 +12,22 @@ const options: { value: Theme; label: string }[] = [
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // setState acceptable in useEffect with empty dependency array for mount guards
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   return (
     <div className={styles.toggle} role="group" aria-label="Color theme">
       {options.map(({ value, label }) => (
         <button
           key={value}
-          className={`${styles.option} ${theme === value ? styles.active : ''}`}
+          className={`${styles.option} ${mounted && theme === value ? styles.active : ''}`}
           onClick={() => setTheme(value)}
-          aria-pressed={theme === value}
+          aria-pressed={mounted ? theme === value : false}
         >
           {label}
         </button>

@@ -1,4 +1,4 @@
-[data-theme="dark"] {
+:root {
   --color-page: #060c14;
   --color-canvas: #0d1c2e;
   --color-panel: #152b44;
@@ -25,6 +25,21 @@
   --badge-object-fg: #60b0ff;
   --badge-array-bg: #3d1212;
   --badge-array-fg: #ff8080;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --font-ui: system-ui, sans-serif;
+
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+
+  --tree-indent: 20px;
 }
 
 [data-theme="light"] {
@@ -54,23 +69,6 @@
   --badge-object-fg: #0a2860;
   --badge-array-bg: #fdd0d0;
   --badge-array-fg: #7a1010;
-}
-
-:root {
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-
-  --font-ui: system-ui, sans-serif;
-
-  --font-size-xs: 11px;
-  --font-size-sm: 13px;
-  --font-size-base: 14px;
-
-  --tree-indent: 20px;
 }
 
 *,
