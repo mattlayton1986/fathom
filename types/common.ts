@@ -4,5 +4,8 @@ export type Result<T, E> =
 
 export type ParseError = {
   message: string;
-  position?: { line: number; column: number }
 };
+
+export type ReducerAction =
+  | { type: 'PARSE_JSON', rawInput: string }
+  | { type: 'CLEAR' };

@@ -5,6 +5,8 @@
   overflow: hidden;
   background-color: var(--color-input);
   min-height: 30px;
+  max-width: 50%;
+  margin: var(--space-2) auto;
 }
 
 .option {
