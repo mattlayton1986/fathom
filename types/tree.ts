@@ -1,16 +1,16 @@
-export type JsonPrimitive = string | number | boolean | null;
-
-type JsonNodeBase = {
+export type JsonNodeBase = {
   id: string;
   path: string;
   key: string | number;
   depth: number;
 };
 
-type CompositeNodeBase = {
+export type CompositeNodeBase = {
   children: TreeNode[];
   childCount: number;
 }
+
+export type JsonPrimitive = string | number | boolean | null;
 
 export type PrimitiveNode = JsonNodeBase & {
   kind: 'primitive';

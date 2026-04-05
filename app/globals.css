@@ -9,6 +9,7 @@
   --color-text-primary: #ddeeff;
   --color-text-secondary: #9dbdd8;
   --color-text-muted: #6e96b4;
+  --color-text-error: #fbbf24;
 
   --color-accent: #00c9a7;
   --color-accent-hover: #00a88a;
@@ -33,11 +34,14 @@
   --space-6: 24px;
   --space-8: 32px;
 
+  --border-radius: 4px;
+
   --font-ui: system-ui, sans-serif;
 
-  --font-size-xs: 11px;
-  --font-size-sm: 13px;
-  --font-size-base: 14px;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-base: 16px;
 
   --tree-indent: 20px;
 }
@@ -53,6 +57,7 @@
   --color-text-primary: #0a1828;
   --color-text-secondary: #1e4262;
   --color-text-muted: #3d6080;
+  --color-text-error: #b45309;
 
   --color-accent: #007a64;
   --color-accent-hover: #005a4a;

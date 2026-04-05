@@ -1,0 +1,38 @@
+@mixin flex($direction: row, $justify: normal, $align: normal) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin button-base {
+  padding: var(--space-2) var(--space-4);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  border: none;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: var(--color-accent);
+  border: 2px solid var(--color-accent-hover);
+  color: var(--color-input);
+
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: var(--color-input);
+  border: 2px solid var(--color-accent-hover);
+  color: var(--color-text-primary);
+
+  &:hover {
+    background-color: var(--color-panel);
+  }
+}
