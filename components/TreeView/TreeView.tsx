@@ -1,4 +1,5 @@
 import { Dispatch, useEffect, useMemo, useRef, useState } from "react";
+import TreeViewContext from "./TreeViewContext";
 import TreeNode from "@/components/TreeView/TreeNode";
 import { AppState, ReducerAction, type TreeNode as TreeNodeData } from "@/types";
 import styles from './TreeView.module.scss';
@@ -65,18 +66,10 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
   if (!tree) return;
 
   return (
-    <div className={styles['tree-view']} role="tree" aria-label="JSON node tree">
-      <TreeNode
-        node={tree}
-        ui={ui}
-        dispatch={dispatch}
-        focusedNodeId={focusedNodeId}
-        setFocusedNodeId={setFocusedNodeId}
-        focusNext={focusNext}
-        focusPrev={focusPrev}
-        focusParent={focusParent}
-        nodeRefs={nodeRefs}
-      />
-    </div>
+    <TreeViewContext.Provider value={{ ui, dispatch, focusedNodeId, setFocusedNodeId, focusNext, focusPrev, focusParent, nodeRefs }}>
+      <div className={styles['tree-view']} role="tree" aria-label="JSON node tree">
+        <TreeNode node={tree} />
+      </div>
+    </TreeViewContext.Provider>
   );
 }
