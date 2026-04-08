@@ -15,6 +15,8 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
 
   useEffect(() => {
     if (!tree) return;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFocusedNodeId(tree.id);
     nodeRefs.current.get(tree.id)?.focus({ preventScroll: true });
   }, [tree]);

@@ -62,12 +62,14 @@ export default function TreeNode({
     : null;
 
   useEffect(() => {
+    const map = nodeRefs.current;
     if (nodeRef.current) {
-      nodeRefs.current.set(node.id, nodeRef.current);
+      map.set(node.id, nodeRef.current);
     }
     return () => {
-      nodeRefs.current.delete(node.id);
+      map.delete(node.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [node.id]);
 
   const handleNodeToggle = (event: MouseEvent<HTMLDivElement>) => {
@@ -117,6 +119,7 @@ export default function TreeNode({
       ref={nodeRef}
       role="treeitem"
       aria-expanded={isObjectArray ? isExpanded : undefined}
+      aria-selected={false}
       tabIndex={focusedNodeId === node.id ? 0 : -1}
       className={styles.node}
       onClick={handleNodeToggle}

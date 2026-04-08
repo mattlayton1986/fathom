@@ -65,9 +65,12 @@ function reducer(
       const { nodeId } = action;
       // create copy to not operate on state object
       const expandedIds = new Set(state.ui.expandedIds);
-      expandedIds.has(nodeId) 
-        ? expandedIds.delete(nodeId) 
-        : expandedIds.add(nodeId);
+
+      if (expandedIds.has(nodeId)) {
+        expandedIds.delete(nodeId);
+      } else {
+        expandedIds.add(nodeId);
+      }
 
       return {
         ...state,

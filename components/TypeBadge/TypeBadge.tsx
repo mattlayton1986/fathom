@@ -1,4 +1,3 @@
-import type { TreeNode } from "@/types";
 import styles from './TypeBadge.module.scss';
 
 type Props = {
