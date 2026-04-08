@@ -36,3 +36,11 @@
     background-color: var(--color-panel);
   }
 }
+
+@mixin button-inline {
+  @include button-secondary;
+  border-width: 1px;
+  padding: var(--space-1);
+  text-wrap: nowrap;
+  font-size: var(--font-size-xs);
+}

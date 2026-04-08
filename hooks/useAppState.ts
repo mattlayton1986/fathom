@@ -1,17 +1,25 @@
 import { useEffect, useReducer } from 'react';
 import buildTree from '@/lib/parser';
+import { getInitialExpandedIds } from '@/lib/tree-utils';
 import type { AppState, ReducerAction } from '@/types';
 
 const STORAGE_KEY_RAW_INPUT = 'fathom:rawInput';
 
-const initialState: Omit<AppState, 'ui'> = {
+const initialState: AppState = {
   rawInput: '',
   parseError: null,
   tree: null,
+  ui: {
+    activeTab: 'raw',
+    expandedIds: new Set<string>(),
+    searchQuery: '',
+    matchingIds: new Set<string>(),
+    copiedId: null
+  }
 };
 
 function reducer(
-  state: Omit<AppState, 'ui'>,
+  state: AppState,
   action: ReducerAction
 ) {
   switch (action.type) {
@@ -19,18 +27,56 @@ function reducer(
       const result = buildTree(action.rawInput);
       // TODO: remove
       console.log(result);
-      return result.ok
-        ? { ...state, rawInput: action.rawInput, parseError: null, tree: result.value }
-        : { ...state, rawInput: action.rawInput, parseError: result.error, tree: null };
-    }
-    case 'CLEAR':
-      localStorage.removeItem(STORAGE_KEY_RAW_INPUT);
+      if (result.ok) {
+        return {
+          ...state,
+          rawInput: action.rawInput,
+          parseError: null,
+          tree: result.value,
+          ui: {
+            ...state.ui,
+            expandedIds: getInitialExpandedIds(result.value),
+          }
+        };
+      }
       return {
         ...state,
-        rawInput: '',
-        parseError: null,
-        tree: null,
+        rawInput: action.rawInput,
+        parseError: result.error,
+        tree: null
+      };
+    }
+    case 'CLEAR': {
+      localStorage.removeItem(STORAGE_KEY_RAW_INPUT);
+      const { rawInput, parseError, tree, ui: { expandedIds, matchingIds } } = initialState;
+      return {
+        ...state,
+        rawInput,
+        parseError,
+        tree,
+        ui: {
+          ...state.ui,
+          expandedIds,
+          matchingIds,
+        }
       }
+    }
+    case 'TOGGLE_NODE': {
+      const { nodeId } = action;
+      // create copy to not operate on state object
+      const expandedIds = new Set(state.ui.expandedIds);
+      expandedIds.has(nodeId) 
+        ? expandedIds.delete(nodeId) 
+        : expandedIds.add(nodeId);
+
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          expandedIds
+        }
+      }
+    }
     default:
       return state;
   }

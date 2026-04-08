@@ -1,0 +1,10 @@
+@use '@/styles/mixins' as *;
+
+.tree-view {
+  @include flex($direction: column);
+  background: var(--color-panel);
+  padding: var(--space-4);
+
+  // TODO: remove when search bar is implemented
+  margin-top: 50px;
+}

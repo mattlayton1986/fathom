@@ -43,7 +43,7 @@
   --font-size-md: 14px;
   --font-size-base: 16px;
 
-  --tree-indent: 20px;
+  --tree-indent: 30px;
 }
 
 [data-theme="light"] {
