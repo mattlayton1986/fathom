@@ -1,33 +1,17 @@
-import { Dispatch, KeyboardEvent, MouseEvent, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { useTreeViewContext } from "./TreeViewContext";
 import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
 import { ROOT_NODE_TOKEN } from "@/lib/constants";
-import type { AppState, ReducerAction, TreeNode as TreeNodeData } from "@/types";
+import type { TreeNode as TreeNodeData } from "@/types";
 import styles from './TreeNode.module.scss';
 
 interface TreeNodeProps {
   node: TreeNodeData;
-  ui: AppState['ui'];
-  dispatch: Dispatch<ReducerAction>;
-  focusedNodeId: string | null;
-  setFocusedNodeId: Dispatch<SetStateAction<string | null>>
-  focusNext: (currentId: string) => void;
-  focusPrev: (currentId: string) => void;
-  focusParent: (parentId: string | null) => void;
-  nodeRefs: RefObject<Map<string, HTMLDivElement>>;
 }
 
-export default function TreeNode({
-  node,
-  ui,
-  dispatch,
-  focusedNodeId,
-  setFocusedNodeId,
-  focusNext,
-  focusPrev,
-  focusParent,
-  nodeRefs
-}: TreeNodeProps) {
+export default function TreeNode({ node }: TreeNodeProps) {
+  const { ui, dispatch, focusedNodeId, focusNext, focusPrev, focusParent, nodeRefs } = useTreeViewContext();
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isStringExpanded, setIsStringExpanded] = useState<boolean>(false);
 
@@ -42,18 +26,7 @@ export default function TreeNode({
 
   const children = isObjectArray
     ? node.children.map(child => (
-      <TreeNode
-        key={child.id}
-        node={child}
-        ui={ui}
-        dispatch={dispatch}
-        focusedNodeId={focusedNodeId}
-        setFocusedNodeId={setFocusedNodeId}
-        focusNext={focusNext}
-        focusPrev={focusPrev}
-        focusParent={focusParent}
-        nodeRefs={nodeRefs}
-      />
+      <TreeNode key={child.id} node={child} />
     ))
     : null;
 
