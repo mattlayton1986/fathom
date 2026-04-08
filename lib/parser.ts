@@ -34,6 +34,7 @@ function parse(
   key: string | number,
   parentPath: string,
   depth: number,
+  parentId: string | null = null,
 ): TreeNode {
 
   const path = formatPath(key, parentPath);
@@ -43,6 +44,7 @@ function parse(
     key,
     path,
     depth,
+    parentId,
   }
 
   switch (typeof data) {
@@ -72,7 +74,7 @@ function parse(
         return {
           ...nodeBase,
           kind: 'array',
-          children: data.map((child, index) => parse(child, index, path, depth + 1)),
+          children: data.map((child, index) => parse(child, index, path, depth + 1, nodeBase.id)),
           childCount: data.length,
         }
       } else if (data === null) {
@@ -87,7 +89,7 @@ function parse(
           ...nodeBase,
           kind: 'object',
           children: Object.entries(data as Record<string, unknown>)
-            .map(([key, value]) => parse(value, key, path, depth + 1)),
+            .map(([key, value]) => parse(value, key, path, depth + 1, nodeBase.id)),
           childCount: Object.keys(data).length,
         }
       }

@@ -1,0 +1,39 @@
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  line-height: 18px;
+  padding: 0 var(--space-2);
+  border-radius: 3px;
+  user-select: none;
+
+  &[data-type='string'] {
+    background: var(--badge-string-bg);
+    color: var(--badge-string-fg);
+  }
+
+  &[data-type='number'] {
+    background: var(--badge-number-bg);
+    color: var(--badge-number-fg);
+  }
+
+  &[data-type='boolean'] {
+    background: var(--badge-boolean-bg);
+    color: var(--badge-boolean-fg);
+  }
+
+  &[data-type='null'] {
+    background: var(--badge-null-bg);
+    color: var(--badge-null-fg);
+  }
+
+  &[data-type='object'] {
+    background: var(--badge-object-bg);
+    color: var(--badge-object-fg);
+  }
+
+  &[data-type='array'] {
+    background: var(--badge-array-bg);
+    color: var(--badge-array-fg);
+  }
+}

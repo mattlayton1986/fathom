@@ -24,8 +24,9 @@
   }
 
   &-right {
-    @include flex($direction: column, $align: center);
+    @include flex($direction: column);
     background-color: var(--color-canvas);
+    padding: var(--space-1) var(--space-4) var(--space-2);
     overflow-y: auto;
     height: 100vh;
   }

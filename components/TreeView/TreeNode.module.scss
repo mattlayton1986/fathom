@@ -1,0 +1,68 @@
+@use '@/styles/mixins' as *;
+
+.node {
+  @include flex($direction: column);
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+  font-size: var(--font-size-base);
+
+  &-content {
+    @include flex($align: baseline);
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    transition: background 0.1s ease;
+
+    &:hover {
+      background: var(--color-input);
+      border-radius: var(--border-radius);
+    }
+  }
+
+  &-key {
+    font-family: var(--font-mono);
+    color: var(--color-text-primary);
+  }
+
+  &-value {
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+    text-wrap: wrap;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  &-children {
+    position: relative;
+    padding-inline-start: var(--tree-indent);
+
+    &::before {
+      position: absolute;
+      content: '';
+      width: 1px;
+      height: 100%;
+      background: var(--color-raised);
+      left: calc(var(--space-3) + 4px);
+    }
+  }
+}
+
+.caret {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--color-accent);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+
+  &[data-expanded='true'] {
+    transform: rotate(90deg);
+  }
+}
+
+.string-toggle {
+  @include button-inline;
+  font-size: var(--font-size-xs);
+  min-width: 63px;
+}

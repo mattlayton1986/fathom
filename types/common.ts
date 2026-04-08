@@ -8,4 +8,5 @@ export type ParseError = {
 
 export type ReducerAction =
   | { type: 'PARSE_JSON', rawInput: string }
-  | { type: 'CLEAR' };
+  | { type: 'CLEAR' }
+  | { type: 'TOGGLE_NODE', nodeId: string };

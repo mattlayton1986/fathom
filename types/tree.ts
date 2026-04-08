@@ -3,6 +3,7 @@ export type JsonNodeBase = {
   path: string;
   key: string | number;
   depth: number;
+  parentId: string | null;
 };
 
 export type CompositeNodeBase = {
