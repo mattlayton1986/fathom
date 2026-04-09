@@ -6,7 +6,6 @@ export type TreeUIState = {
   expandedIds: Set<string>;
   searchQuery: string;
   matchingIds: Set<string>;
-  copiedId: string | null;
 };
 
 export type AppState = {

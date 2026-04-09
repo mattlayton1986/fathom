@@ -2,6 +2,7 @@ import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { useTreeViewContext } from "./TreeViewContext";
 import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
+import NodeKey from "@/components/TreeView/NodeKey";
 import { ROOT_NODE_TOKEN } from "@/lib/constants";
 import type { TreeNode as TreeNodeData } from "@/types";
 import styles from './TreeNode.module.scss';
@@ -11,9 +12,9 @@ interface TreeNodeProps {
 }
 
 export default function TreeNode({ node }: TreeNodeProps) {
+  const [isStringExpanded, setIsStringExpanded] = useState<boolean>(false);
   const { ui, dispatch, focusedNodeId, focusNext, focusPrev, focusParent, nodeRefs } = useTreeViewContext();
   const nodeRef = useRef<HTMLDivElement>(null);
-  const [isStringExpanded, setIsStringExpanded] = useState<boolean>(false);
 
   const isObjectArray = node.kind !== 'primitive';
   const isExpanded = ui.expandedIds.has(node.id);
@@ -100,7 +101,7 @@ export default function TreeNode({ node }: TreeNodeProps) {
     >
       <div className={styles['node-content']}>
         {caret}
-        <span className={styles['node-key']}>{node.depth === 0 ? ROOT_NODE_TOKEN : node.key}</span>
+        <NodeKey path={node.path} label={node.depth === 0 ? ROOT_NODE_TOKEN : node.key}></NodeKey>
         {!isObjectArray && <span className={styles['node-value']}>{stringDisplayValue || String(node.value)}</span>}
         {
           rawValue && (
