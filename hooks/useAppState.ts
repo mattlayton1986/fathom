@@ -14,7 +14,6 @@ const initialState: AppState = {
     expandedIds: new Set<string>(),
     searchQuery: '',
     matchingIds: new Set<string>(),
-    copiedId: null
   }
 };
 
