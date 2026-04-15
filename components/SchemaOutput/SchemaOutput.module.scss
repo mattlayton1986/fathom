@@ -1,0 +1,45 @@
+@use '@/styles/mixins' as *;
+
+.output {
+  &-container {
+    @include flex($direction: column);
+    flex: 1;
+    width: 100%;
+    padding: var(--space-4);
+    gap: var(--space-3);
+    box-sizing: border-box;
+    background-color: var(--color-raised);
+    min-height: 0;
+    overflow: hidden;
+    padding: var(--space-8)
+  }
+
+  &-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0;
+    white-space: pre-wrap;
+
+    code {
+      line-height: 1.5;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-md);
+    }
+  }
+
+  &-button_container {
+    @include flex($justify: center, $align: center);
+    gap: var(--space-2);
+    margin: var(--space-4) auto;
+
+    .btn-copy {
+      @include button-primary;
+      min-width: 85px;
+    }
+  }
+
+  .empty-message {
+    margin: 0;
+  }
+}

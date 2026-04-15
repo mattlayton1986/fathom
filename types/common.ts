@@ -9,4 +9,5 @@ export type ParseError = {
 export type ReducerAction =
   | { type: 'PARSE_JSON', rawInput: string }
   | { type: 'CLEAR' }
-  | { type: 'TOGGLE_NODE', nodeId: string };
+  | { type: 'TOGGLE_NODE', nodeId: string }
+  | { type: 'SET_ACTIVE_TAB', activeTab: 'raw' | 'typescript' | 'zod' };

@@ -79,6 +79,15 @@ function reducer(
         }
       }
     }
+    case 'SET_ACTIVE_TAB': {
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          activeTab: action.activeTab
+        }
+      }
+    }
     default:
       return state;
   }

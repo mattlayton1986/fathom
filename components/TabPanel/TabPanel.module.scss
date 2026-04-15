@@ -1,0 +1,41 @@
+@use '@/styles/mixins' as *;
+
+.tabpanel {
+  @include flex($direction: column);
+  flex: 1;
+  min-height: 0;
+  padding-top: var(--space-8);
+
+  &-tablist {
+    background: transparent;
+  }
+
+  &-tab {
+    background: var(--color-raised);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+
+    &[data-active="true"] {
+      box-shadow: inset 0 -2px 0 var(--color-accent);
+      color: var(--color-text-primary);
+    }
+  }
+
+  &-panel {
+    @include flex($direction: column);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}
