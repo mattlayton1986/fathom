@@ -52,7 +52,7 @@ export function createTypeScriptSchema(tree: TreeNode): string {
           // ===== ARRAY OF PRIMITIVES =======
         } else if (treeNode.children?.every(child => child.kind === 'primitive')) {
           const primitiveTypes = new Set<string>();
-          for (let child of treeNode.children) {
+          for (const child of treeNode.children) {
             primitiveTypes.add(child.valueType);
           }
           if (primitiveTypes.size > 1) {
@@ -164,7 +164,7 @@ export function createZodSchema(tree: TreeNode): string {
           // ===== ARRAY OF PRIMITIVES ===== //
         } else if (treeNode.children?.every(child => child.kind === 'primitive')) {
           const primitiveTypes = new Set<string>();
-          for (let child of treeNode.children) {
+          for (const child of treeNode.children) {
             primitiveTypes.add(child.valueType);
           }
           if (primitiveTypes.size > 1) {
