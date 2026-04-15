@@ -16,11 +16,15 @@ export function formatPath(key: string | number, parentPath: string): string {
 
   // for string keys that are not valid JS identifiers -> wrap in square brackets and quotes
   // example: object["content-type"]
-  if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key)) {
+  if (needsQuotes(key)) {
     return `${parentPath}["${key}"]`;
   }
 
   // for normal keys -> use dot notation
   // example: object.name
   return `${parentPath}.${key}`;
+}
+
+export function needsQuotes(key: string): boolean {
+  return !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
 }

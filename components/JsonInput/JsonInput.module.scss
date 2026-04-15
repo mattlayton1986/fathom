@@ -9,6 +9,8 @@
     gap: var(--space-3);
     box-sizing: border-box;
     background-color: var(--color-raised);
+    min-height: 0;
+    overflow: hidden;
   }
 
   &-field {
@@ -23,6 +25,8 @@
     border-radius: var(--border-radius);
     resize: none;
     box-sizing: border-box;
+    min-height: 0;
+    overflow-y: auto;
 
     &::placeholder {
       color: var(--color-text-muted);
