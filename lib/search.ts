@@ -19,7 +19,14 @@ export function computeMatches(query: string, tree: TreeNode): SearchMatches {
       .toLowerCase()
       .includes(normalizedQuery);
 
-    if (keyMatches) {
+    const valueMatches = node.kind === 'primitive'
+      && String(node.value)
+      .toLowerCase()
+      .includes(normalizedQuery);
+
+    const nodeMatches = keyMatches || valueMatches;
+
+    if (nodeMatches) {
       matchIds.add(node.id);
 
       for (const ancestorId of ancestors) {
