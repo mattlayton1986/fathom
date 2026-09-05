@@ -34,7 +34,7 @@ export default function Home() {
         />
       </div>
       <div className={styles["panel-right"]}>
-        <SearchBar />
+        <SearchBar dispatch={dispatch} />
         <TreeView
           dispatch={dispatch}
           tree={state.tree}
