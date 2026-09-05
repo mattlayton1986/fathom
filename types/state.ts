@@ -4,8 +4,10 @@ import type { ParseError } from "./common";
 export type TreeUIState = {
   activeTab: 'raw' | 'typescript' | 'zod';
   expandedIds: Set<string>;
+  expandedIdsBeforeSearch: Set<string> | null;
   searchQuery: string;
-  matchingIds: Set<string>;
+  matchIds: Set<string>;
+  ancestorIds: Set<string>;
 };
 
 export type AppState = {

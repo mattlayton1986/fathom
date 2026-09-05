@@ -1,19 +1,24 @@
 import { useEffect, useReducer } from 'react';
 import buildTree from '@/lib/parser';
+import { computeMatches } from '@/lib/search';
 import { getInitialExpandedIds } from '@/lib/tree-utils';
 import type { AppState, ReducerAction } from '@/types';
 
 const STORAGE_KEY_RAW_INPUT = 'fathom:rawInput';
 
-const initialState: AppState = {
-  rawInput: '',
-  parseError: null,
-  tree: null,
-  ui: {
-    activeTab: 'raw',
-    expandedIds: new Set<string>(),
-    searchQuery: '',
-    matchingIds: new Set<string>(),
+function createInitialState(): AppState {
+  return {
+    rawInput: '',
+    parseError: null,
+    tree: null,
+    ui: {
+      activeTab: 'raw',
+      expandedIds: new Set<string>(),
+      expandedIdsBeforeSearch: null,
+      searchQuery: '',
+      matchIds: new Set<string>(),
+      ancestorIds: new Set<string>(),
+    }
   }
 };
 
@@ -24,8 +29,11 @@ function reducer(
   switch (action.type) {
     case 'PARSE_JSON': {
       const result = buildTree(action.rawInput);
+      const initialUi = createInitialState().ui;
+
       // TODO: remove
       console.log(result);
+
       if (result.ok) {
         return {
           ...state,
@@ -35,6 +43,10 @@ function reducer(
           ui: {
             ...state.ui,
             expandedIds: getInitialExpandedIds(result.value),
+            expandedIdsBeforeSearch: initialUi.expandedIdsBeforeSearch,
+            searchQuery: initialUi.searchQuery,
+            matchIds: initialUi.matchIds,
+            ancestorIds: initialUi.ancestorIds,
           }
         };
       }
@@ -47,16 +59,21 @@ function reducer(
     }
     case 'CLEAR': {
       localStorage.removeItem(STORAGE_KEY_RAW_INPUT);
-      const { rawInput, parseError, tree, ui: { expandedIds, matchingIds } } = initialState;
+
+      const initialState = createInitialState();
+
       return {
         ...state,
-        rawInput,
-        parseError,
-        tree,
+        rawInput: initialState.rawInput,
+        parseError: initialState.parseError,
+        tree: initialState.tree,
         ui: {
           ...state.ui,
-          expandedIds,
-          matchingIds,
+          expandedIds: initialState.ui.expandedIds,
+          expandedIdsBeforeSearch: initialState.ui.expandedIdsBeforeSearch,
+          searchQuery: initialState.ui.searchQuery,
+          matchIds: initialState.ui.matchIds,
+          ancestorIds: initialState.ui.ancestorIds,
         }
       }
     }
@@ -79,6 +96,54 @@ function reducer(
         }
       }
     }
+    case 'SET_SEARCH': {
+      const { query } = action;
+
+      if (!query) {
+        const initialUi = createInitialState().ui;
+        const expandedIds = new Set(
+          state.ui.expandedIdsBeforeSearch ?? state.ui.expandedIds
+        );
+
+        return {
+          ...state,
+          ui: {
+            ...state.ui,
+            searchQuery: initialUi.searchQuery,
+            expandedIds,
+            expandedIdsBeforeSearch: initialUi.expandedIdsBeforeSearch,
+            matchIds: initialUi.matchIds,
+            ancestorIds: initialUi.ancestorIds,
+          }
+        }
+      }
+
+      if (!state.tree) {
+        return state;
+      }
+
+      const { matchIds, ancestorIds } = computeMatches(query, state.tree);
+
+      const expandedIdsBeforeSearch = state.ui.expandedIdsBeforeSearch ?? new Set(state.ui.expandedIds);
+
+      const expandedIds = new Set(expandedIdsBeforeSearch);
+
+      for (const ancestorId of ancestorIds) {
+        expandedIds.add(ancestorId);
+      }
+
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          searchQuery: query,
+          expandedIds,
+          expandedIdsBeforeSearch,
+          matchIds,
+          ancestorIds,
+        }
+      }
+    }
     case 'SET_ACTIVE_TAB': {
       return {
         ...state,
@@ -94,7 +159,9 @@ function reducer(
 }
 
 export function useAppState() {
-  const [state, dispatch] = useReducer(reducer, initialState, () => {
+  const [state, dispatch] = useReducer(reducer, undefined, () => {
+    const initialState = createInitialState();
+
     const rawInput = typeof window !== 'undefined'
       ? localStorage.getItem(STORAGE_KEY_RAW_INPUT)
       : null;
