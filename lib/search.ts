@@ -14,6 +14,8 @@ export function computeMatches(query: string, tree: TreeNode): SearchMatches {
     return { matchIds, ancestorIds };
   }
 
+  // recursively traverse the tree, adding matches and ancestors of matches
+  // to their respective Sets
   const visit = (node: TreeNode, ancestors: string[]) => {
     const keyMatches = String(node.key)
       .toLowerCase()
@@ -21,8 +23,8 @@ export function computeMatches(query: string, tree: TreeNode): SearchMatches {
 
     const valueMatches = node.kind === 'primitive'
       && String(node.value)
-      .toLowerCase()
-      .includes(normalizedQuery);
+        .toLowerCase()
+        .includes(normalizedQuery);
 
     const nodeMatches = keyMatches || valueMatches;
 
