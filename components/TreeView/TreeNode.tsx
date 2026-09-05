@@ -1,5 +1,6 @@
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { useTreeViewContext } from "./TreeViewContext";
+import HighlightedText from './HighlightedText';
 import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
 import NodeKey from "@/components/TreeView/NodeKey";
@@ -114,8 +115,21 @@ export default function TreeNode({ node }: TreeNodeProps) {
     >
       <div className={styles['node-content']}>
         {caret}
-        <NodeKey path={node.path} label={node.depth === 0 ? ROOT_NODE_TOKEN : node.key}></NodeKey>
-        {!isObjectArray && <span className={styles['node-value']}>{stringDisplayValue || String(node.value)}</span>}
+        <NodeKey
+          path={node.path}
+          label={node.depth === 0 ? ROOT_NODE_TOKEN : node.key}
+          searchQuery={ui.searchQuery}
+          isMatch={ui.matchIds.has(node.id)}
+        />
+        {!isObjectArray && (
+          <span className={styles['node-value']}>
+            <HighlightedText
+              text={stringDisplayValue || String(node.value)}
+              searchQuery={ui.searchQuery}
+              isMatch={ui.matchIds.has(node.id)}
+            />
+          </span>
+        )}
         {
           rawValue && (
             <button
