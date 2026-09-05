@@ -18,6 +18,10 @@ export default function TreeNode({ node }: TreeNodeProps) {
 
   const isObjectArray = node.kind !== 'primitive';
   const isExpanded = ui.expandedIds.has(node.id);
+  const isSearchActive = ui.searchQuery !== '';
+  const isVisible = !isSearchActive
+    || ui.matchIds.has(node.id)
+    || ui.ancestorIds.has(node.id);
   const rawValue = !isObjectArray && node.valueType === 'string' && String(node.value).length > 80 && String(node.value);
   const stringDisplayValue = rawValue && !isStringExpanded
     ? rawValue.slice(0, 80) + '...'
@@ -37,14 +41,19 @@ export default function TreeNode({ node }: TreeNodeProps) {
 
   useEffect(() => {
     const map = nodeRefs.current;
-    if (nodeRef.current) {
-      map.set(node.id, nodeRef.current);
+
+    if (!isVisible || !nodeRef.current) {
+      map.delete(node.id);
+      return;
     }
+
+    map.set(node.id, nodeRef.current);
+
     return () => {
       map.delete(node.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [node.id]);
+  }, [isVisible, node.id]);
 
   const handleNodeToggle = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -87,6 +96,10 @@ export default function TreeNode({ node }: TreeNodeProps) {
         break;
     }
   };
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <div

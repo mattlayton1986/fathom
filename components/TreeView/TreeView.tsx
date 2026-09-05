@@ -34,7 +34,16 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
 
     // named function necessary for recursive traversal
     const traverse = (node: TreeNodeData) => {
+      const isVisible = !ui.searchQuery
+        || ui.matchIds.has(node.id)
+        || ui.ancestorIds.has(node.id);
+
+      if (!isVisible) {
+        return;
+      }
+
       result.push(node);
+
       if (node.kind !== 'primitive' && ui.expandedIds.has(node.id)) {
         for (const child of node.children) {
           traverse(child);
@@ -45,7 +54,7 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     traverse(tree);
     return result;
 
-  }, [tree, ui.expandedIds]);
+  }, [tree, ui.searchQuery, ui.expandedIds, ui.matchIds, ui.ancestorIds]);
 
   const focusNext = (currentId: string) => {
     const index = visibleNodes.findIndex(n => n.id === currentId);
