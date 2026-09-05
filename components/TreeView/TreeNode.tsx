@@ -23,11 +23,27 @@ export default function TreeNode({ node }: TreeNodeProps) {
   const isVisible = !isSearchActive
     || ui.matchIds.has(node.id)
     || ui.ancestorIds.has(node.id);
-  const rawValue = !isObjectArray && node.valueType === 'string' && String(node.value).length > 80 && String(node.value);
-  const stringDisplayValue = rawValue && !isStringExpanded
-    ? rawValue.slice(0, 80) + '...'
-    : rawValue;
+  const rawValue = !isObjectArray
+    && node.valueType === 'string'
+    && String(node.value).length > 80
+    && String(node.value);
 
+  const normalizedSearchQuery = ui.searchQuery.toLowerCase();
+  const firstMatchIndex = rawValue && isSearchActive
+    ? rawValue.toLowerCase().indexOf(normalizedSearchQuery)
+    : -1;
+
+  const stringDisplayValue = rawValue && !isStringExpanded
+    ? firstMatchIndex >= 80
+      ? `...${rawValue.slice(
+        Math.max(0, firstMatchIndex - 30),
+        Math.min(rawValue.length, firstMatchIndex + normalizedSearchQuery.length + 50)
+      )}${firstMatchIndex + normalizedSearchQuery.length + 50 < rawValue.length
+        ? '...'
+        : ''
+      }`
+      : `${rawValue.slice(0, 80)}...`
+    : rawValue;
   const badgeType = isObjectArray ? node.kind : node.valueType;
 
   const children = isObjectArray
