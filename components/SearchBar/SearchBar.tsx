@@ -20,6 +20,11 @@ export default function SearchBar({ dispatch }: SearchBarProps) {
     });
   }, [debouncedQuery, dispatch]);
 
+  const handleClearSearch = () => {
+    setQuery('');
+    dispatch({ type: 'SET_SEARCH', query: '' });
+  };
+
   return (
     <div className={styles['tree-search']}>
       <label htmlFor="tree-search">Search JSON</label>
@@ -30,6 +35,16 @@ export default function SearchBar({ dispatch }: SearchBarProps) {
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Search in JSON"
       />
+      {query !== '' && (
+        <button
+          type="button"
+          className={styles['clear-button']}
+          aria-label="Clear search"
+          onClick={handleClearSearch}
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }
