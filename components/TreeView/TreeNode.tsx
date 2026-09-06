@@ -4,7 +4,7 @@ import HighlightedText from './HighlightedText';
 import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
 import NodeKey from "@/components/TreeView/NodeKey";
-import { ROOT_NODE_TOKEN } from "@/lib/constants";
+import { ARRAY_PAGE_SIZE, ROOT_NODE_TOKEN } from "@/lib/constants";
 import type { TreeNode as TreeNodeData } from "@/types";
 import styles from './TreeNode.module.scss';
 
@@ -14,7 +14,17 @@ interface TreeNodeProps {
 
 export default function TreeNode({ node }: TreeNodeProps) {
   const [isStringExpanded, setIsStringExpanded] = useState<boolean>(false);
-  const { ui, dispatch, focusedNodeId, focusNext, focusPrev, focusParent, nodeRefs } = useTreeViewContext();
+  const {
+    ui,
+    dispatch,
+    focusedNodeId,
+    focusNext,
+    focusPrev,
+    focusParent,
+    nodeRefs,
+    arrayItemLimits,
+    showMoreArrayItems,
+  } = useTreeViewContext();
   const nodeRef = useRef<HTMLDivElement>(null);
 
   const isObjectArray = node.kind !== 'primitive';
@@ -46,11 +56,21 @@ export default function TreeNode({ node }: TreeNodeProps) {
     : rawValue;
   const badgeType = isObjectArray ? node.kind : node.valueType;
 
-  const children = isObjectArray
-    ? node.children.map(child => (
-      <TreeNode key={child.id} node={child} />
-    ))
-    : null;
+  const arrayItemLimit = arrayItemLimits[node.id] ?? ARRAY_PAGE_SIZE;
+  const remainingArrayItemCount = node.kind === 'array'
+    ? node.children.length - arrayItemLimit
+    : 0;
+  const hasMoreArrayItems = !isSearchActive && remainingArrayItemCount > 0;
+
+  const childrenToDisplay = node.kind === 'array' && !isSearchActive
+    ? node.children.slice(0, arrayItemLimit)
+    : node.kind !== 'primitive'
+      ? node.children
+      : [];
+
+  const children = childrenToDisplay.map(child => (
+    <TreeNode key={child.id} node={child} />
+  ));
 
   const caret = isObjectArray
     ? <span className={styles.caret} data-expanded={isExpanded} aria-hidden="true"></span>
@@ -83,6 +103,11 @@ export default function TreeNode({ node }: TreeNodeProps) {
   const handleStringToggle = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setIsStringExpanded(prev => !prev);
+  };
+
+  const handleShowMoreArrayItems = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    showMoreArrayItems(node.id);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -162,6 +187,18 @@ export default function TreeNode({ node }: TreeNodeProps) {
       </div>
       <div className={styles['node-children']}>
         {isExpanded && children}
+        {isExpanded && hasMoreArrayItems && (
+          <button
+            type="button"
+            className={styles['array-pagination']}
+            onClick={handleShowMoreArrayItems}
+            onKeyDown={(event) => event.stopPropagation()}
+          >
+            {remainingArrayItemCount > ARRAY_PAGE_SIZE
+              ? `Show next ${ARRAY_PAGE_SIZE} items`
+              : `Show remaining ${remainingArrayItemCount} items`}
+          </button>
+        )}
       </div>
     </div>
   );
