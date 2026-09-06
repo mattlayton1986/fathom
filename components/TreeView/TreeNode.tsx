@@ -5,6 +5,7 @@ import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
 import NodeKey from "@/components/TreeView/NodeKey";
 import { ARRAY_PAGE_SIZE, ROOT_NODE_TOKEN } from "@/lib/constants";
+import { countGraphemes, sliceGraphemes } from '@/lib/string-utils';
 import type { TreeNode as TreeNodeData } from "@/types";
 import styles from './TreeNode.module.scss';
 
@@ -33,27 +34,44 @@ export default function TreeNode({ node }: TreeNodeProps) {
   const isVisible = !isSearchActive
     || ui.matchIds.has(node.id)
     || ui.ancestorIds.has(node.id);
-  const rawValue = !isObjectArray
-    && node.valueType === 'string'
-    && String(node.value).length > 80
-    && String(node.value);
+  const stringValue = !isObjectArray && node.valueType === 'string'
+    ? String(node.value)
+    : null;
+  const rawValue = stringValue !== null && countGraphemes(stringValue) > 80
+    ? stringValue
+    : null;
 
   const normalizedSearchQuery = ui.searchQuery.toLowerCase();
   const firstMatchIndex = rawValue && isSearchActive
     ? rawValue.toLowerCase().indexOf(normalizedSearchQuery)
     : -1;
 
+  const firstMatchGraphemeIndex = rawValue && firstMatchIndex >= 0
+    ? countGraphemes(rawValue.slice(0, firstMatchIndex))
+    : -1;
+  const matchedGraphemeCount = rawValue && firstMatchIndex >= 0
+    ? countGraphemes(
+      rawValue.slice(firstMatchIndex, firstMatchIndex + normalizedSearchQuery.length)
+    )
+    : 0;
+  const rawValueGraphemeCount = rawValue
+    ? countGraphemes(rawValue)
+    : 0;
+  const excerptStart = Math.max(0, firstMatchGraphemeIndex - 30);
+  const excerptEnd = Math.min(
+    rawValueGraphemeCount,
+    firstMatchGraphemeIndex + matchedGraphemeCount + 50
+  );
+
   const stringDisplayValue = rawValue && !isStringExpanded
-    ? firstMatchIndex >= 80
-      ? `...${rawValue.slice(
-        Math.max(0, firstMatchIndex - 30),
-        Math.min(rawValue.length, firstMatchIndex + normalizedSearchQuery.length + 50)
-      )}${firstMatchIndex + normalizedSearchQuery.length + 50 < rawValue.length
+    ? firstMatchGraphemeIndex >= 80
+      ? `...${sliceGraphemes(rawValue, excerptStart, excerptEnd)}${excerptEnd < rawValueGraphemeCount
         ? '...'
         : ''
       }`
-      : `${rawValue.slice(0, 80)}...`
+      : `${sliceGraphemes(rawValue, 0, 80)}...`
     : rawValue;
+
   const badgeType = isObjectArray ? node.kind : node.valueType;
 
   const arrayItemLimit = arrayItemLimits[node.id] ?? ARRAY_PAGE_SIZE;
