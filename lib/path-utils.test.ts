@@ -34,6 +34,14 @@ describe("formatPath", () => {
     it("should wrap number-initial keys in quotes and bracket notation", () => {
       expect(formatPath('1star', '$')).toBe('$["1star"]');
     });
+
+    it("should escape quotes inside bracket-notation keys", () => {
+      expect(formatPath('say "hello"', '$')).toBe('$["say \\"hello\\""]')
+    });
+
+    it('should escape backslashes inside bracket-notation keys', () => {
+      expect(formatPath('folder\\name', '$')).toBe('$["folder\\\\name"]');
+    });
   });
 
   describe("standard object dot notation", () => {
