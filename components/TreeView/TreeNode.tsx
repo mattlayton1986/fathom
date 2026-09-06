@@ -1,5 +1,6 @@
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { useTreeViewContext } from "./TreeViewContext";
+import HighlightedText from './HighlightedText';
 import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
 import NodeKey from "@/components/TreeView/NodeKey";
@@ -18,11 +19,31 @@ export default function TreeNode({ node }: TreeNodeProps) {
 
   const isObjectArray = node.kind !== 'primitive';
   const isExpanded = ui.expandedIds.has(node.id);
-  const rawValue = !isObjectArray && node.valueType === 'string' && String(node.value).length > 80 && String(node.value);
-  const stringDisplayValue = rawValue && !isStringExpanded
-    ? rawValue.slice(0, 80) + '...'
-    : rawValue;
+  const isSearchActive = ui.searchQuery !== '';
+  const isVisible = !isSearchActive
+    || ui.matchIds.has(node.id)
+    || ui.ancestorIds.has(node.id);
+  const rawValue = !isObjectArray
+    && node.valueType === 'string'
+    && String(node.value).length > 80
+    && String(node.value);
 
+  const normalizedSearchQuery = ui.searchQuery.toLowerCase();
+  const firstMatchIndex = rawValue && isSearchActive
+    ? rawValue.toLowerCase().indexOf(normalizedSearchQuery)
+    : -1;
+
+  const stringDisplayValue = rawValue && !isStringExpanded
+    ? firstMatchIndex >= 80
+      ? `...${rawValue.slice(
+        Math.max(0, firstMatchIndex - 30),
+        Math.min(rawValue.length, firstMatchIndex + normalizedSearchQuery.length + 50)
+      )}${firstMatchIndex + normalizedSearchQuery.length + 50 < rawValue.length
+        ? '...'
+        : ''
+      }`
+      : `${rawValue.slice(0, 80)}...`
+    : rawValue;
   const badgeType = isObjectArray ? node.kind : node.valueType;
 
   const children = isObjectArray
@@ -37,14 +58,19 @@ export default function TreeNode({ node }: TreeNodeProps) {
 
   useEffect(() => {
     const map = nodeRefs.current;
-    if (nodeRef.current) {
-      map.set(node.id, nodeRef.current);
+
+    if (!isVisible || !nodeRef.current) {
+      map.delete(node.id);
+      return;
     }
+
+    map.set(node.id, nodeRef.current);
+
     return () => {
       map.delete(node.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [node.id]);
+  }, [isVisible, node.id]);
 
   const handleNodeToggle = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -88,6 +114,10 @@ export default function TreeNode({ node }: TreeNodeProps) {
     }
   };
 
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <div
       ref={nodeRef}
@@ -101,8 +131,21 @@ export default function TreeNode({ node }: TreeNodeProps) {
     >
       <div className={styles['node-content']}>
         {caret}
-        <NodeKey path={node.path} label={node.depth === 0 ? ROOT_NODE_TOKEN : node.key}></NodeKey>
-        {!isObjectArray && <span className={styles['node-value']}>{stringDisplayValue || String(node.value)}</span>}
+        <NodeKey
+          path={node.path}
+          label={node.depth === 0 ? ROOT_NODE_TOKEN : node.key}
+          searchQuery={ui.searchQuery}
+          isMatch={ui.matchIds.has(node.id)}
+        />
+        {!isObjectArray && (
+          <span className={styles['node-value']}>
+            <HighlightedText
+              text={stringDisplayValue || String(node.value)}
+              searchQuery={ui.searchQuery}
+              isMatch={ui.matchIds.has(node.id)}
+            />
+          </span>
+        )}
         {
           rawValue && (
             <button

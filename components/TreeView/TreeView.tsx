@@ -34,7 +34,16 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
 
     // named function necessary for recursive traversal
     const traverse = (node: TreeNodeData) => {
+      const isVisible = !ui.searchQuery
+        || ui.matchIds.has(node.id)
+        || ui.ancestorIds.has(node.id);
+
+      if (!isVisible) {
+        return;
+      }
+
       result.push(node);
+
       if (node.kind !== 'primitive' && ui.expandedIds.has(node.id)) {
         for (const child of node.children) {
           traverse(child);
@@ -45,7 +54,7 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     traverse(tree);
     return result;
 
-  }, [tree, ui.expandedIds]);
+  }, [tree, ui.searchQuery, ui.expandedIds, ui.matchIds, ui.ancestorIds]);
 
   const focusNext = (currentId: string) => {
     const index = visibleNodes.findIndex(n => n.id === currentId);
@@ -65,11 +74,26 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
 
   if (!tree) return;
 
+  const hasNoSearchResults = ui.searchQuery !== '' && ui.matchIds.size === 0;
+
+  const searchResultAnnouncement = ui.searchQuery === ''
+    ? ''
+    : `${ui.matchIds.size} result${ui.matchIds.size === 1 ? '' : 's'} found for "${ui.searchQuery}"`;
+
   return (
     <TreeViewContext.Provider value={{ ui, dispatch, focusedNodeId, setFocusedNodeId, focusNext, focusPrev, focusParent, nodeRefs }}>
-      <div className={styles['tree-view']} role="tree" aria-label="JSON node tree">
-        <TreeNode node={tree} />
-      </div>
-    </TreeViewContext.Provider>
+      <p className={styles['search-results']} aria-live="polite">
+        {searchResultAnnouncement}
+      </p>
+      {hasNoSearchResults ? (
+        <p className={styles['no-results']}>
+          No results found for &ldquo;{ui.searchQuery}&rdquo;
+        </p>
+      ) : (
+        <div className={styles['tree-view']} role="tree" aria-label="JSON node tree">
+          <TreeNode node={tree} />
+        </div>
+      )}
+    </TreeViewContext.Provider >
   );
 }

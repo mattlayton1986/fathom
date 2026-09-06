@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import ThemeToggle from '@/components/ThemeToggle/ThemeToggle';
 import TabPanel from '@/components/TabPanel/TabPanel';
+import SearchBar from '@/components/SearchBar/SearchBar';
 import TreeView from '@/components/TreeView/TreeView';
 import { useAppState } from '@/hooks/useAppState';
 import { createTypeScriptSchema, createZodSchema } from '@/lib/schema-inference';
@@ -33,6 +34,7 @@ export default function Home() {
         />
       </div>
       <div className={styles["panel-right"]}>
+        <SearchBar dispatch={dispatch} />
         <TreeView
           dispatch={dispatch}
           tree={state.tree}

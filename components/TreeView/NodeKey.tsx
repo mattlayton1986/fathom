@@ -1,12 +1,15 @@
 import { MouseEvent, useId, useRef, useState } from "react";
+import HighlightedText from './HighlightedText';
 import styles from './NodeKey.module.scss';
 
 interface NodeKeyProps {
   path: string;
   label: string | number;
+  searchQuery: string;
+  isMatch: boolean;
 }
 
-export default function NodeKey({ path, label }: NodeKeyProps) {
+export default function NodeKey({ path, label, searchQuery, isMatch }: NodeKeyProps) {
   const [isCopied, setIsCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tooltipId = useId();
@@ -31,7 +34,13 @@ export default function NodeKey({ path, label }: NodeKeyProps) {
         onClick={handleCopy}
         onMouseDown={(e) => e.preventDefault()}
         onKeyDown={(e) => e.stopPropagation()}
-      >{label}</button>
+      >
+        <HighlightedText
+          text={label}
+          searchQuery={searchQuery}
+          isMatch={isMatch}
+        />
+      </button>
       <span className={isCopied ? styles.copied : undefined} role="tooltip" id={tooltipId}>{isCopied ? 'Copied!' : path}</span>
     </span>
   );

@@ -4,7 +4,20 @@
   @include flex($direction: column);
   background: var(--color-panel);
   padding: var(--space-4);
+}
 
-  // TODO: remove when search bar is implemented
-  margin-top: 50px;
+.no-results {
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.search-results {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
