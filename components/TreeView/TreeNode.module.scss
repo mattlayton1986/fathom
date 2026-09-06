@@ -61,3 +61,8 @@
   font-size: var(--font-size-xs);
   min-width: 63px;
 }
+
+.array-pagination {
+  @include button-inline;
+  margin-block: var(--space-2);
+}

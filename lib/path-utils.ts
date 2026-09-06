@@ -17,7 +17,7 @@ export function formatPath(key: string | number, parentPath: string): string {
   // for string keys that are not valid JS identifiers -> wrap in square brackets and quotes
   // example: object["content-type"]
   if (needsQuotes(key)) {
-    return `${parentPath}["${key}"]`;
+    return `${parentPath}[${JSON.stringify(key)}]`;
   }
 
   // for normal keys -> use dot notation

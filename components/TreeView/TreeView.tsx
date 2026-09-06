@@ -2,6 +2,7 @@ import { Dispatch, useEffect, useMemo, useRef, useState } from "react";
 import TreeViewContext from "./TreeViewContext";
 import TreeNode from "@/components/TreeView/TreeNode";
 import { AppState, ReducerAction, type TreeNode as TreeNodeData } from "@/types";
+import { ARRAY_PAGE_SIZE } from "@/lib/constants";
 import styles from './TreeView.module.scss';
 
 interface TreeViewProps {
@@ -11,6 +12,7 @@ interface TreeViewProps {
 }
 
 export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
+  const [arrayItemLimits, setArrayItemLimits] = useState<Record<string, number>>({});
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -18,6 +20,8 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     if (!tree) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setArrayItemLimits({});
+
     setFocusedNodeId(tree.id);
     nodeRefs.current.get(tree.id)?.focus({ preventScroll: true });
   }, [tree]);
@@ -27,6 +31,13 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
       nodeRefs.current.get(focusedNodeId)?.focus({ preventScroll: true });
     }
   }, [focusedNodeId]);
+
+  const showMoreArrayItems = (arrayId: string) => {
+    setArrayItemLimits(currentLimits => ({
+      ...currentLimits,
+      [arrayId]: (currentLimits[arrayId] ?? ARRAY_PAGE_SIZE) + ARRAY_PAGE_SIZE,
+    }));
+  };
 
   const visibleNodes = useMemo(() => {
     if (!tree) return [];
@@ -45,7 +56,11 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
       result.push(node);
 
       if (node.kind !== 'primitive' && ui.expandedIds.has(node.id)) {
-        for (const child of node.children) {
+        const childrenToTraverse = node.kind === 'array' && !ui.searchQuery
+          ? node.children.slice(0, arrayItemLimits[node.id] ?? ARRAY_PAGE_SIZE)
+          : node.children;
+
+        for (const child of childrenToTraverse) {
           traverse(child);
         }
       }
@@ -54,7 +69,7 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     traverse(tree);
     return result;
 
-  }, [tree, ui.searchQuery, ui.expandedIds, ui.matchIds, ui.ancestorIds]);
+  }, [tree, ui.searchQuery, ui.expandedIds, ui.matchIds, ui.ancestorIds, arrayItemLimits]);
 
   const focusNext = (currentId: string) => {
     const index = visibleNodes.findIndex(n => n.id === currentId);
@@ -81,7 +96,19 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     : `${ui.matchIds.size} result${ui.matchIds.size === 1 ? '' : 's'} found for "${ui.searchQuery}"`;
 
   return (
-    <TreeViewContext.Provider value={{ ui, dispatch, focusedNodeId, setFocusedNodeId, focusNext, focusPrev, focusParent, nodeRefs }}>
+    <TreeViewContext.Provider
+      value={{
+        ui,
+        dispatch,
+        focusedNodeId,
+        setFocusedNodeId,
+        focusNext,
+        focusPrev,
+        focusParent,
+        nodeRefs,
+        arrayItemLimits,
+        showMoreArrayItems,
+      }}>
       <p className={styles['search-results']} aria-live="polite">
         {searchResultAnnouncement}
       </p>

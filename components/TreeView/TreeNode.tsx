@@ -4,7 +4,8 @@ import HighlightedText from './HighlightedText';
 import TypeBadge from "@/components/TypeBadge/TypeBadge";
 import CollapsePreview from "@/components/CollapsePreview/CollapsePreview";
 import NodeKey from "@/components/TreeView/NodeKey";
-import { ROOT_NODE_TOKEN } from "@/lib/constants";
+import { ARRAY_PAGE_SIZE, ROOT_NODE_TOKEN } from "@/lib/constants";
+import { countGraphemes, sliceGraphemes } from '@/lib/string-utils';
 import type { TreeNode as TreeNodeData } from "@/types";
 import styles from './TreeNode.module.scss';
 
@@ -14,7 +15,17 @@ interface TreeNodeProps {
 
 export default function TreeNode({ node }: TreeNodeProps) {
   const [isStringExpanded, setIsStringExpanded] = useState<boolean>(false);
-  const { ui, dispatch, focusedNodeId, focusNext, focusPrev, focusParent, nodeRefs } = useTreeViewContext();
+  const {
+    ui,
+    dispatch,
+    focusedNodeId,
+    focusNext,
+    focusPrev,
+    focusParent,
+    nodeRefs,
+    arrayItemLimits,
+    showMoreArrayItems,
+  } = useTreeViewContext();
   const nodeRef = useRef<HTMLDivElement>(null);
 
   const isObjectArray = node.kind !== 'primitive';
@@ -23,34 +34,61 @@ export default function TreeNode({ node }: TreeNodeProps) {
   const isVisible = !isSearchActive
     || ui.matchIds.has(node.id)
     || ui.ancestorIds.has(node.id);
-  const rawValue = !isObjectArray
-    && node.valueType === 'string'
-    && String(node.value).length > 80
-    && String(node.value);
+  const stringValue = !isObjectArray && node.valueType === 'string'
+    ? String(node.value)
+    : null;
+  const rawValue = stringValue !== null && countGraphemes(stringValue) > 80
+    ? stringValue
+    : null;
 
   const normalizedSearchQuery = ui.searchQuery.toLowerCase();
   const firstMatchIndex = rawValue && isSearchActive
     ? rawValue.toLowerCase().indexOf(normalizedSearchQuery)
     : -1;
 
+  const firstMatchGraphemeIndex = rawValue && firstMatchIndex >= 0
+    ? countGraphemes(rawValue.slice(0, firstMatchIndex))
+    : -1;
+  const matchedGraphemeCount = rawValue && firstMatchIndex >= 0
+    ? countGraphemes(
+      rawValue.slice(firstMatchIndex, firstMatchIndex + normalizedSearchQuery.length)
+    )
+    : 0;
+  const rawValueGraphemeCount = rawValue
+    ? countGraphemes(rawValue)
+    : 0;
+  const excerptStart = Math.max(0, firstMatchGraphemeIndex - 30);
+  const excerptEnd = Math.min(
+    rawValueGraphemeCount,
+    firstMatchGraphemeIndex + matchedGraphemeCount + 50
+  );
+
   const stringDisplayValue = rawValue && !isStringExpanded
-    ? firstMatchIndex >= 80
-      ? `...${rawValue.slice(
-        Math.max(0, firstMatchIndex - 30),
-        Math.min(rawValue.length, firstMatchIndex + normalizedSearchQuery.length + 50)
-      )}${firstMatchIndex + normalizedSearchQuery.length + 50 < rawValue.length
+    ? firstMatchGraphemeIndex >= 80
+      ? `...${sliceGraphemes(rawValue, excerptStart, excerptEnd)}${excerptEnd < rawValueGraphemeCount
         ? '...'
         : ''
       }`
-      : `${rawValue.slice(0, 80)}...`
+      : `${sliceGraphemes(rawValue, 0, 80)}...`
     : rawValue;
+
   const badgeType = isObjectArray ? node.kind : node.valueType;
 
-  const children = isObjectArray
-    ? node.children.map(child => (
-      <TreeNode key={child.id} node={child} />
-    ))
-    : null;
+  const arrayItemLimit = arrayItemLimits[node.id] ?? ARRAY_PAGE_SIZE;
+  const remainingArrayItemCount = node.kind === 'array'
+    ? node.children.length - arrayItemLimit
+    : 0;
+  const hasMoreArrayItems = !isSearchActive && remainingArrayItemCount > 0;
+
+  const childrenToDisplay = node.kind === 'array' && !isSearchActive
+    ? node.children.slice(0, arrayItemLimit)
+    : node.kind !== 'primitive'
+      ? node.children
+      : [];
+
+  const children = childrenToDisplay.map(child => (
+    <TreeNode key={child.id} node={child} />
+  ));
 
   const caret = isObjectArray
     ? <span className={styles.caret} data-expanded={isExpanded} aria-hidden="true"></span>
@@ -83,6 +121,11 @@ export default function TreeNode({ node }: TreeNodeProps) {
   const handleStringToggle = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setIsStringExpanded(prev => !prev);
+  };
+
+  const handleShowMoreArrayItems = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    showMoreArrayItems(node.id);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -162,6 +205,18 @@ export default function TreeNode({ node }: TreeNodeProps) {
       </div>
       <div className={styles['node-children']}>
         {isExpanded && children}
+        {isExpanded && hasMoreArrayItems && (
+          <button
+            type="button"
+            className={styles['array-pagination']}
+            onClick={handleShowMoreArrayItems}
+            onKeyDown={(event) => event.stopPropagation()}
+          >
+            {remainingArrayItemCount > ARRAY_PAGE_SIZE
+              ? `Show next ${ARRAY_PAGE_SIZE} items`
+              : `Show remaining ${remainingArrayItemCount} items`}
+          </button>
+        )}
       </div>
     </div>
   );
