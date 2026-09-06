@@ -13,6 +13,7 @@ export default function NodeKey({ path, label, searchQuery, isMatch }: NodeKeyPr
   const [isCopied, setIsCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tooltipId = useId();
+  const isLongKey = typeof label === 'string' && Array.from(label).length > 32;
 
   const handleCopy = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -27,7 +28,10 @@ export default function NodeKey({ path, label, searchQuery, isMatch }: NodeKeyPr
   }
 
   return (
-    <span className={styles["node-key"]}>
+    <span className={isLongKey
+      ? `${styles['node-key']} ${styles['long-key']}`
+      : styles['node-key']}
+    >
       <button
         type="button"
         aria-describedby={tooltipId}
