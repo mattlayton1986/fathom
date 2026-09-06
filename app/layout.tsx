@@ -20,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={jetbrainsMono.variable}>
       <head>
+        <meta name="theme-color" content="#0d1c2e" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -30,6 +31,14 @@ export default function RootLayout({
                   (theme !== 'dark' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
                 if (isLight) {
                   document.documentElement.setAttribute('data-theme', 'light');
+                }
+                
+                var themeColor = document.querySelector('meta[name="theme-color"]');
+                if (themeColor) {
+                  themeColor.setAttribute(
+                    'content',
+                    isLight ? '#e8f2fb' : '#0d1c2e'
+                  );
                 }
               } catch(e) {}
             })();
