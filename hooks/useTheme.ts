@@ -22,6 +22,9 @@ export function useTheme() {
       } else {
         document.documentElement.removeAttribute('data-theme');
       }
+
+      document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+        ?.setAttribute('content', isLight ? '#e8f2fb' : '#0d1c2e');
     }
 
     apply(theme);
@@ -30,10 +33,7 @@ export function useTheme() {
     // Handle case where user changes OS theme while app is running
     if (theme === 'system') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = (e: MediaQueryListEvent) =>
-        e.matches
-          ? document.documentElement.removeAttribute('data-theme')
-          : document.documentElement.setAttribute('data-theme', 'light');
+      const handler = () => apply('system');
       mq.addEventListener('change', handler);
 
       // cleanup: remove listener when toggle changes away from 'system'
