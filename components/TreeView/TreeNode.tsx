@@ -166,7 +166,6 @@ export default function TreeNode({ node }: TreeNodeProps) {
       ref={nodeRef}
       role="treeitem"
       aria-expanded={isObjectArray ? isExpanded : undefined}
-      aria-selected={false}
       tabIndex={focusedNodeId === node.id ? 0 : -1}
       className={styles.node}
       onClick={handleNodeToggle}
@@ -204,7 +203,11 @@ export default function TreeNode({ node }: TreeNodeProps) {
         {!isExpanded && isObjectArray && <CollapsePreview node={node} />}
       </div>
       <div className={styles['node-children']}>
-        {isExpanded && children}
+        {isExpanded && (
+          <div role="group">
+            {children}
+          </div>
+        )}
         {isExpanded && hasMoreArrayItems && (
           <button
             type="button"
