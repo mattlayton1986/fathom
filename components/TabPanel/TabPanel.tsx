@@ -1,4 +1,4 @@
-import { Dispatch } from "react";
+import { type KeyboardEvent, Dispatch } from "react";
 import JsonInput from "../JsonInput/JsonInput";
 import SchemaOutput from "../SchemaOutput/SchemaOutput";
 import { ReducerAction, AppState } from "@/types";
@@ -12,6 +12,14 @@ interface TabPanelProps {
   typescriptSchema: string;
   zodSchema: string;
 }
+
+const tabOrder: AppState['ui']['activeTab'][] = ['raw', 'typescript', 'zod'];
+
+const tabIds: Record<AppState['ui']['activeTab'], string> = {
+  raw: 'tab-raw',
+  typescript: 'tab-ts',
+  zod: 'tab-zod',
+};
 
 export default function TabPanel({
   activeTab,
@@ -29,6 +37,25 @@ export default function TabPanel({
     })
   }
 
+  const handleTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    currentTab: AppState['ui']['activeTab']
+  ) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+
+    event.preventDefault();
+
+    const currentIndex = tabOrder.indexOf(currentTab);
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const nextIndex = (currentIndex + direction + tabOrder.length) % tabOrder.length;
+    const nextTab = tabOrder[nextIndex];
+
+    if (!nextTab) return;
+
+    handleTab(nextTab);
+    document.getElementById(tabIds[nextTab])?.focus();
+  }
+
   return (
     <div className={styles['tabpanel']}>
       <div role="tablist" className={styles['tabpanel-tablist']}>
@@ -41,6 +68,7 @@ export default function TabPanel({
           aria-selected={activeTab === 'raw'}
           aria-controls="panel-raw"
           onClick={() => handleTab('raw')}
+          onKeyDown={(event) => handleTabKeyDown(event, 'raw')}
         >Raw JSON</button>
         <button
           type="button"
@@ -51,6 +79,7 @@ export default function TabPanel({
           aria-selected={activeTab === 'typescript'}
           aria-controls="panel-ts"
           onClick={() => handleTab('typescript')}
+          onKeyDown={(event) => handleTabKeyDown(event, 'typescript')}
         >TypeScript</button>
         <button
           type="button"
@@ -61,6 +90,7 @@ export default function TabPanel({
           aria-selected={activeTab === 'zod'}
           aria-controls="panel-zod"
           onClick={() => handleTab('zod')}
+          onKeyDown={(event) => handleTabKeyDown(event, 'zod')}
         >Zod</button>
       </div>
 
