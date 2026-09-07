@@ -39,6 +39,7 @@ export default function Home() {
           dispatch={dispatch}
           tree={state.tree}
           ui={state.ui}
+          parseError={state.parseError}
         />
       </div>
     </main>
