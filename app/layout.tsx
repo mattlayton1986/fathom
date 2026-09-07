@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import PwaRegistration from "@/components/PwaRegistration/PwaRegistration";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <PwaRegistration />
         {children}
       </body>
     </html>
