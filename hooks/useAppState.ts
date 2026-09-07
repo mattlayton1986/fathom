@@ -31,9 +31,6 @@ function reducer(
       const result = buildTree(action.rawInput);
       const initialUi = createInitialState().ui;
 
-      // TODO: remove
-      console.log(result);
-
       if (result.ok) {
         return {
           ...state,
