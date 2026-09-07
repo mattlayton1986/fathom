@@ -22,6 +22,7 @@ export default function TreeNode({ node }: TreeNodeProps) {
     focusNext,
     focusPrev,
     focusParent,
+    focusFirstChild,
     nodeRefs,
     arrayItemLimits,
     showMoreArrayItems,
@@ -148,7 +149,7 @@ export default function TreeNode({ node }: TreeNodeProps) {
         break;
       case 'ArrowRight':
         if (isObjectArray && !isExpanded) dispatch({ type: 'TOGGLE_NODE', nodeId: node.id });
-        else if (isObjectArray && isExpanded) focusNext(node.id);
+        else if (isObjectArray && isExpanded) focusFirstChild(node.id);
         break;
       case 'ArrowLeft':
         if (isObjectArray && isExpanded) dispatch({ type: 'TOGGLE_NODE', nodeId: node.id });
