@@ -22,6 +22,7 @@ export default function TreeNode({ node }: TreeNodeProps) {
     focusNext,
     focusPrev,
     focusParent,
+    focusFirstChild,
     nodeRefs,
     arrayItemLimits,
     showMoreArrayItems,
@@ -148,7 +149,7 @@ export default function TreeNode({ node }: TreeNodeProps) {
         break;
       case 'ArrowRight':
         if (isObjectArray && !isExpanded) dispatch({ type: 'TOGGLE_NODE', nodeId: node.id });
-        else if (isObjectArray && isExpanded) focusNext(node.id);
+        else if (isObjectArray && isExpanded) focusFirstChild(node.id);
         break;
       case 'ArrowLeft':
         if (isObjectArray && isExpanded) dispatch({ type: 'TOGGLE_NODE', nodeId: node.id });
@@ -166,7 +167,6 @@ export default function TreeNode({ node }: TreeNodeProps) {
       ref={nodeRef}
       role="treeitem"
       aria-expanded={isObjectArray ? isExpanded : undefined}
-      aria-selected={false}
       tabIndex={focusedNodeId === node.id ? 0 : -1}
       className={styles.node}
       onClick={handleNodeToggle}
@@ -204,7 +204,11 @@ export default function TreeNode({ node }: TreeNodeProps) {
         {!isExpanded && isObjectArray && <CollapsePreview node={node} />}
       </div>
       <div className={styles['node-children']}>
-        {isExpanded && children}
+        {isExpanded && (
+          <div role="group">
+            {children}
+          </div>
+        )}
         {isExpanded && hasMoreArrayItems && (
           <button
             type="button"

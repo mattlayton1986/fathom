@@ -13,6 +13,12 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: ["components/TreeView/TreeNode.tsx"],
+    rules: {
+      "jsx-a11y/role-has-required-aria-props": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

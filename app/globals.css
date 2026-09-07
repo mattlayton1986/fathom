@@ -8,11 +8,11 @@
 
   --color-text-primary: #ddeeff;
   --color-text-secondary: #9dbdd8;
-  --color-text-muted: #6e96b4;
+  --color-text-muted: #83abc9;
   --color-text-error: #fbbf24;
 
   --color-accent: #00c9a7;
-  --color-accent-hover: #00a88a;
+  --color-accent-hover: #00b9a0;
 
   --badge-string-bg: #003d36;
   --badge-string-fg: #00e8c6;
@@ -88,4 +88,15 @@ body {
   font-family: var(--font-ui);
   font-size: var(--font-size-base);
   margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
 }

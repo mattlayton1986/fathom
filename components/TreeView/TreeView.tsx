@@ -87,6 +87,15 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     if (parentId) setFocusedNodeId(parentId);
   }
 
+  const focusFirstChild = (parentId: string) => {
+    const parentIndex = visibleNodes.findIndex(node => node.id === parentId);
+    const firstChild = visibleNodes[parentIndex + 1];
+
+    if (firstChild?.parentId === parentId) {
+      setFocusedNodeId(firstChild.id);
+    }
+  }
+
   if (!tree) return;
 
   const hasNoSearchResults = ui.searchQuery !== '' && ui.matchIds.size === 0;
@@ -105,6 +114,7 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
         focusNext,
         focusPrev,
         focusParent,
+        focusFirstChild,
         nodeRefs,
         arrayItemLimits,
         showMoreArrayItems,

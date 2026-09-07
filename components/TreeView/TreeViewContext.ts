@@ -9,6 +9,7 @@ type TreeViewContextValue = {
   focusNext: (currentId: string) => void;
   focusPrev: (currentId: string) => void;
   focusParent: (parentId: string | null) => void;
+  focusFirstChild: (parentId: string) => void;
   nodeRefs: RefObject<Map<string, HTMLDivElement>>;
   arrayItemLimits: Record<string, number>;
   showMoreArrayItems: (arrayId: string) => void;
