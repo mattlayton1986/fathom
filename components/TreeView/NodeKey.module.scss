@@ -23,6 +23,12 @@
     font-family: var(--font-mono);
     font-size: var(--font-size-sm);
 
+    @media (max-width: 768px) {
+      box-sizing: border-box;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
     &.copied {
       font-family: var(--font-ui);
     }

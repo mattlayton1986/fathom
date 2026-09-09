@@ -5,13 +5,14 @@ import { AppState, ReducerAction, type TreeNode as TreeNodeData } from "@/types"
 import { ARRAY_PAGE_SIZE } from "@/lib/constants";
 import styles from './TreeView.module.scss';
 
-interface TreeViewProps {
+type TreeViewProps = {
   dispatch: Dispatch<ReducerAction>;
   tree: TreeNodeData | null;
   ui: AppState['ui'];
+  parseError: AppState['parseError'];
 }
 
-export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
+export default function TreeView({ tree, ui, dispatch, parseError }: TreeViewProps) {
   const [arrayItemLimits, setArrayItemLimits] = useState<Record<string, number>>({});
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -96,7 +97,15 @@ export default function TreeView({ tree, ui, dispatch }: TreeViewProps) {
     }
   }
 
-  if (!tree) return;
+  if (!tree) {
+    if (parseError) return null;
+
+    return (
+      <div className={styles['no-results']}>
+        <p>Your parsed JSON will appear here.</p>
+      </div>
+    )
+  };
 
   const hasNoSearchResults = ui.searchQuery !== '' && ui.matchIds.size === 0;
 
