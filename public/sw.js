@@ -1,11 +1,17 @@
 const CACHE_NAME = 'fathom-static-v1';
 
+const BASE_PATH = new URL(self.registration.scope)
+  .pathname
+  .replace(/\/$/, '');
+
+const APP_SHELL_PATH = `${BASE_PATH}/`;
+
 const STATIC_ASSETS = [
-  '/',
-  '/manifest.webmanifest',
-  '/favicon.ico',
-  '/icons/fathom-192.png',
-  '/icons/fathom-512.png',
+  APP_SHELL_PATH,
+  `${BASE_PATH}/manifest.webmanifest`,
+  `${BASE_PATH}/favicon.ico`,
+  `${BASE_PATH}/icons/fathom-192.png`,
+  `${BASE_PATH}/icons/fathom-512.png`,
 ];
 
 self.addEventListener('install', (event) => {
@@ -29,9 +35,9 @@ self.addEventListener('fetch', (event) => {
   ) return;
 
   const isAppShellRequest =
-    event.request.mode === 'navigate' && url.pathname === '/';
+    event.request.mode === 'navigate' && url.pathname === APP_SHELL_PATH;
 
-  const isStaticAssetRequest = url.pathname.startsWith('/_next/static');
+  const isStaticAssetRequest = url.pathname.startsWith(`${BASE_PATH}/_next/static`);
 
   if (!isAppShellRequest && !isStaticAssetRequest) return;
 
@@ -39,11 +45,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          _saveResponse('/', response, event);
+          _saveResponse(APP_SHELL_PATH, response, event);
           return response;
         })
         .catch(async () => {
-          return (await caches.match('/')) ?? Response.error();
+          return (await caches.match(APP_SHELL_PATH)) ?? Response.error();
         })
     );
     return;
