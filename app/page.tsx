@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import ThemeToggle from '@/components/ThemeToggle/ThemeToggle';
 import TabPanel from '@/components/TabPanel/TabPanel';
 import SearchBar from '@/components/SearchBar/SearchBar';
@@ -11,6 +11,7 @@ import styles from './page.module.scss';
 
 export default function Home() {
   const [state, dispatch] = useAppState();
+  const treePanelRef = useRef<HTMLDivElement>(null);
 
   const typescriptSchema = useMemo(() => {
     return state.tree ? createTypeScriptSchema(state.tree) : '';
@@ -18,6 +19,21 @@ export default function Home() {
 
   const zodSchema = useMemo(() => {
     return state.tree ? createZodSchema(state.tree) : '';
+  }, [state.tree]);
+
+  useEffect(() => {
+    if (!state.tree
+      || !window.matchMedia('(max-width: 768px)').matches
+    ) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    treePanelRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
   }, [state.tree]);
 
   return (
@@ -33,7 +49,7 @@ export default function Home() {
           zodSchema={zodSchema}
         />
       </div>
-      <div className={styles["panel-right"]}>
+      <div ref={treePanelRef} className={styles["panel-right"]}>
         <SearchBar dispatch={dispatch} />
         <TreeView
           dispatch={dispatch}
